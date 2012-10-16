@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+# Usage: de fbid <url>
+# Summary: Fetches facebook graph ID for the link
+
+
+require 'rubygems'
+require 'uri'
+require 'net/https'
+require 'json'
+
+puts "Fetching ID..."
+
+url = URI.parse(ARGV.first)
+
+http = Net::HTTP.new("graph.facebook.com", 443)
+http.use_ssl = true
+http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+
+request = Net::HTTP::Get.new("/#{ url.path.split('/').last }")
+
+response = http.request(request)
+
+puts
+puts JSON.parse(response.body)['id']
+puts

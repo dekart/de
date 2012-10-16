@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Usage: de c
+# Summary: Launches Rails console
+
+if test -f Gemfile; then
+  echo 'Starting console...' && bundle exec rails c;
+elif test -f ./script/console; then
+  echo 'Starting console...' && ./script/console;
+else
+  echo "Seems it's not a Rails project"
+fi
