@@ -1,0 +1,16 @@
+#!/usr/bin/env ruby
+# Provide de completions
+# Usage: de stl <server>
+# Summary: Connects to specified remote server & tails production.log
+
+require File.expand_path('../lib/ssh_hosts', __FILE__)
+
+if ARGV.first == '--complete'
+  SshHosts.host_list_autocomplete
+else
+  server = ARGV.first
+
+  SshHosts.remote_command(server, %{
+    tail -n 500 -f #{ server }/shared/log/production.log
+  })
+end

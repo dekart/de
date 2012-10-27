@@ -3,14 +3,14 @@
 # Usage: de sc <server>
 # Summary: Connects to specified remote server & runs console in the rails application named similarly to the server
 
+require File.expand_path('../lib/ssh_hosts', __FILE__)
+
 if ARGV.first == '--complete'
-  Dir[File.expand_path('~/.ssh/hosts/**/*.yml')].map{|f| File.basename(f, '.yml') }.sort.each do |file|
-    puts file unless file == 'global'
-  end
+  SshHosts.host_list_autocomplete
 else
   server = ARGV.first
 
-  system %{
-    ssh #{server} -t "bash -i -c 'echo Running console... && cd #{ server }/current; (if test -f script/console ; then ./script/console; else bundle exec rails c; fi)'"
-  }
+  SshHosts.remote_command(server, %{
+    echo Running console... && cd #{ server }/current; (if test -f script/console ; then ./script/console; else bundle exec rails c; fi)
+  })
 end

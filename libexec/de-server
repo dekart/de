@@ -1,0 +1,13 @@
+#!/usr/bin/env ruby
+
+system %{mkdir -p tmp}
+
+if ARGV.first == 'clean'
+  puts "Cleaning caches..."
+
+  system %{rm -rf public/assets/* tmp/cache/*}
+end
+
+puts "Starting server..."
+system %{sudo passenger start -p 80 --user=DEkart --max-pool-size=2}
+
