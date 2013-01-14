@@ -9,5 +9,8 @@ if ARGV.first == 'clean'
 end
 
 puts "Starting server..."
-system %{sudo passenger start -p 80 --user=DEkart --max-pool-size=2}
+
+user = `whoami`.strip
+
+system %{sudo passenger start -p 80 --user=#{ user } --max-pool-size=2}
 
