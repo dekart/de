@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+
 # Provide de completions
 # Usage: de sc <server>
 # Summary: Connects to specified remote server & runs console in the rails application named similarly to the server
