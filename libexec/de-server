@@ -2,15 +2,23 @@
 
 system %{mkdir -p tmp}
 
-if ARGV.first == 'clean'
+if ARGV.include?('clean')
   puts "Cleaning caches..."
 
   system %{rm -rf public/assets/* tmp/cache/*}
+end
+
+flags = []
+
+if ARGV.include?('offline')
+  puts 'Running offline...'
+
+  flags << "OFFLINE=true"
 end
 
 puts "Starting server..."
 
 user = `whoami`.strip
 
-system %{sudo passenger start -p 80 --user=#{ user } --max-pool-size=2}
+system %{sudo #{flags.join(' ')} passenger start -p 80 --user=#{ user } --max-pool-size=2}
 
