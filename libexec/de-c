@@ -2,10 +2,10 @@
 # Usage: de c
 # Summary: Launches Rails console
 
-if test -f Gemfile; then
-  echo 'Starting console...' && bundle exec rails c;
-elif test -f ./script/console; then
+if test -f ./script/console; then
   echo 'Starting console...' && ./script/console;
+elif test -f Gemfile; then
+  echo 'Starting console...' && bundle exec rails c;
 else
   echo "Seems it's not a Rails project"
 fi
