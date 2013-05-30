@@ -16,6 +16,14 @@ if ARGV.include?('offline')
   flags << "OFFLINE=true"
 end
 
+existing = `pgrep -f 'nginx.*master'`.strip
+
+if existing.size > 0
+  puts "Stopping currently running server..."
+
+  system %{sudo kill #{existing}}
+end
+
 puts "Starting server..."
 
 user = `whoami`.strip
