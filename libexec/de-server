@@ -26,7 +26,5 @@ end
 
 puts "Starting server..."
 
-user = `whoami`.strip
-
-system %{sudo #{flags.join(' ')} passenger start -p 80 --user=#{ user } --max-pool-size=2}
+system %{#{flags.join(' ')} passenger start --max-pool-size=2}
 
