@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+
+require "yaml"
+
+puts "Generating SSH config file..."
+
+File.open(File.expand_path("../config", __FILE__), "w+") do |config|
+  Dir[File.expand_path("../hosts/**/*.yml", __FILE__)].sort.each do |file|
+    hosts = YAML.load(File.read(file))
+
+    hosts.each_pair do |key, settings|
+      config.puts "host #{key}"
+
+      settings.each_pair do |key, value|
+        config.puts "  #{key} #{value}" unless key == 'de'
+      end
+
+      config.puts
+    end
+
+    config.puts
+  end
+end
+
+puts "Done!"
