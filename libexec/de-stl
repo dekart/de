@@ -10,7 +10,11 @@ if ARGV.first == '--complete'
 else
   server = ARGV.first
 
+  rails_folder = SshHosts.remote_rails_folder(server)
+
+  puts "Connecting..."
+
   SshHosts.remote_command(server, %{
-    tail -n 500 -f #{ server }/shared/log/production.log
+    tail -n 500 -f #{ rails_folder }/shared/log/production.log
   })
 end
