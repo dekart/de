@@ -15,17 +15,29 @@ module SshHosts
     end
 
     def remote_rails_folder(server)
+      config = server_config(server)
+
+      if config and config['rails_folder']
+        config['rails_folder']
+      else
+        server
+      end
+    end
+
+    def remote_rails_env(server)
+      config = server_config(server)
+
+      if config and config['rails_env']
+        config['rails_env']
+      else
+        'production'
+      end
+    end
+
+    def server_config(server)
       config_file = Dir[File.expand_path("~/.ssh/hosts/**/#{server}.yml")].first
 
-      if File.file?(config_file)
-        config = YAML.load_file(config_file)[server]
-
-        if config['de'] and config['de']['rails_folder']
-          return config['de']['rails_folder']
-        end
-      end
-
-      server
+      YAML.load_file(config_file)[server]['de'] if File.file?(config_file)
     end
   end
 end
