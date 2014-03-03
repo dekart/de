@@ -30,10 +30,10 @@ certificate_key_path  = File.expand_path("./config/deploy/certificates/developme
 if File.file?(certificate_path) and File.file?(certificate_key_path)
   puts "Starting server with HTTPS..."
 
-  system %{#{flags.join(' ')} passenger start --max-pool-size=2 --ssl --ssl-port=3001 --ssl-certificate=#{certificate_path} --ssl-certificate-key=#{certificate_key_path}}
+  system %{#{flags.join(' ')} passenger start --max-pool-size=3 --ssl --ssl-port=3001 --ssl-certificate=#{certificate_path} --ssl-certificate-key=#{certificate_key_path}}
 else
   puts "Starting server..."
 
-  system %{#{flags.join(' ')} passenger start --max-pool-size=2}
+  system %{#{flags.join(' ')} passenger start --max-pool-size=3}
 end
 
