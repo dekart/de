@@ -2,10 +2,12 @@
 
 require "yaml"
 
-puts "Generating SSH config file..."
+config_path = File.expand_path("~/.ssh/config")
 
-File.open(File.expand_path("../config", __FILE__), "w+") do |config|
-  Dir[File.expand_path("../hosts/**/*.yml", __FILE__)].sort.each do |file|
+puts "Generating SSH config file (#{config_path})..."
+
+File.open(config_path, "w+") do |config|
+  Dir[File.expand_path("~/.ssh/hosts/**/*.yml")].sort.each do |file|
     hosts = YAML.load(File.read(file))
 
     hosts.each_pair do |key, settings|
