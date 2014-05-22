@@ -1,0 +1,21 @@
+#!/usr/bin/env ruby
+
+# Provide de completions
+# Usage: de sc <server>
+# Summary: Connects to specified remote server & runs console in the rails application named similarly to the server
+
+require File.expand_path('../lib/ssh_hosts', __FILE__)
+
+if ARGV.first == '--complete'
+  SshHosts.host_list_autocomplete
+else
+  server = ARGV.first
+
+  rails_folder = SshHosts.remote_rails_folder(server)
+
+  puts "Connecting..."
+
+  SshHosts.remote_command(server, %{
+    cd #{ rails_folder }/current && bash
+  })
+end

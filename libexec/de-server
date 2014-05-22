@@ -16,6 +16,12 @@ if ARGV.include?('offline')
   flags << "OFFLINE=true"
 end
 
+unless ARGV.include?('debug')
+  puts "Asset debug disabled..."
+
+  flags << "ASSET_DEBUG=false"
+end
+
 existing = `pgrep -f 'nginx.*master'`.strip
 
 if existing.size > 0
