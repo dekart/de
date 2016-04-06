@@ -1,45 +1,105 @@
 #!/usr/bin/env ruby
 
-system %{mkdir -p tmp}
+require 'yaml'
 
-if ARGV.include?('clean')
-  puts "Cleaning caches..."
+redis_server_path = "/usr/local/opt/redis/homebrew.mxcl.redis.plist"
+percona_server_path = "/usr/local/opt/percona-server/homebrew.mxcl.percona-server.plist"
+postgresql_server_path = "/usr/local/opt/postgresql/homebrew.mxcl.postgresql.plist"
 
-  system %{rm -rf public/assets/* tmp/cache/*}
+db_server_launched = false
+
+begin
+  system %{mkdir -p tmp/pids}
+
+  if ARGV.include?('clean')
+    puts "Cleaning caches..."
+
+    system %{rm -rf public/assets/* tmp/cache/*}
+  end
+
+  flags = []
+
+  if ARGV.include?('offline')
+    puts 'Running offline...'
+
+    flags << "OFFLINE=true"
+  end
+
+  unless ARGV.include?('debug')
+    puts "Asset debug disabled..."
+
+    flags << "ASSET_DEBUG=false"
+  end
+
+  existing = `pgrep -f 'nginx.*master'`.strip
+
+  if existing.size > 0
+    puts "Stopping currently running server..."
+
+    system %{sudo kill #{existing}}
+  end
+
+  certificate_path      = File.expand_path("./config/deploy/certificates/development.csr")
+  certificate_key_path  = File.expand_path("./config/deploy/certificates/development.key")
+
+
+  if (/darwin/ =~ RUBY_PLATFORM) != nil
+    if File.file?(redis_server_path)
+      puts "Launching Redis server..."
+
+      system %{launchctl load #{redis_server_path}}
+    end
+
+    if File.file?(File.expand_path('./config/database.yml'))
+      db_config = YAML.load_file(File.expand_path('./config/database.yml'))
+
+      if db_config['development']['adapter'] == 'mysql2' and File.file?(percona_server_path)
+        puts "Launching Percona server..."
+
+        system %{launchctl load #{ percona_server_path }}
+
+        db_server_launched = 'percona'
+      elsif db_config['development']['adapter'] == 'postgresql' and File.file?(postgresql_server_path)
+        puts "Launching PostreSQL server..."
+
+        system %{launchctl load #{ postgresql_server_path }}
+
+        db_server_launched = 'postgresql'
+      end
+    end
+  end
+
+  if File.file?(certificate_path) and File.file?(certificate_key_path)
+    puts "Starting server with HTTPS..."
+
+    system %{#{flags.join(' ')} sudo passenger start --max-pool-size=3 --ssl  --port=80 --ssl-certificate=#{certificate_path} --ssl-certificate-key=#{certificate_key_path}}
+  else
+    puts "Starting server..."
+
+    system %{#{flags.join(' ')} sudo passenger start --max-pool-size=3 --port=80 }
+  end
+rescue SystemExit, Interrupt # Perform some actions on exit
+  puts "Exiting..."
+
+  exit
+ensure
+  if (/darwin/ =~ RUBY_PLATFORM) != nil
+    if File.file?(redis_server_path)
+      puts "Stopping Redis server..."
+
+      system %{launchctl unload #{redis_server_path}}
+    end
+
+    case db_server_launched
+    when 'percona'
+      puts "Stopping Percona server..."
+
+      system %{launchctl unload #{ percona_server_path }}
+    when 'postgresql'
+      puts "Stopping PostreSQL server..."
+
+      system %{launchctl unload #{ postgresql_server_path }}
+    end
+  end
+
 end
-
-flags = []
-
-if ARGV.include?('offline')
-  puts 'Running offline...'
-
-  flags << "OFFLINE=true"
-end
-
-unless ARGV.include?('debug')
-  puts "Asset debug disabled..."
-
-  flags << "ASSET_DEBUG=false"
-end
-
-existing = `pgrep -f 'nginx.*master'`.strip
-
-if existing.size > 0
-  puts "Stopping currently running server..."
-
-  system %{sudo kill #{existing}}
-end
-
-certificate_path      = File.expand_path("./config/deploy/certificates/development.csr")
-certificate_key_path  = File.expand_path("./config/deploy/certificates/development.key")
-
-if File.file?(certificate_path) and File.file?(certificate_key_path)
-  puts "Starting server with HTTPS..."
-
-  system %{#{flags.join(' ')} passenger start --max-pool-size=3 --ssl --ssl-port=3001 --ssl-certificate=#{certificate_path} --ssl-certificate-key=#{certificate_key_path}}
-else
-  puts "Starting server..."
-
-  system %{#{flags.join(' ')} passenger start --max-pool-size=3}
-end
-
