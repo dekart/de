@@ -72,7 +72,7 @@ begin
   if File.file?(certificate_path) and File.file?(certificate_key_path)
     puts "Starting server with HTTPS..."
 
-    system %{#{flags.join(' ')} sudo passenger start --max-pool-size=3 --ssl  --port=80 --ssl-certificate=#{certificate_path} --ssl-certificate-key=#{certificate_key_path}}
+    system %{#{flags.join(' ')} sudo passenger start --max-pool-size=3 --port=80 --ssl --ssl-port=443 --ssl-certificate=#{certificate_path} --ssl-certificate-key=#{certificate_key_path}}
   else
     puts "Starting server..."
 
