@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
 # Quick & Dirty data URI for a file
-#
+# Summary: Generates data-uri for a file
+
 require 'base64'
 require 'uri'
 

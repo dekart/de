@@ -1,4 +1,6 @@
 #!/usr/bin/env ruby
+# Summary: Generates ssh config from a YAML structure
+
 
 require "yaml"
 
