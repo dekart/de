@@ -35,9 +35,14 @@ module SshHosts
     end
 
     def server_config(server)
-      config_file = Dir[File.expand_path("~/.ssh/hosts/**/#{server}.yml")].first
+      Dir[File.expand_path("~/.ssh/hosts/**/*.yml")].each do |file|
+        data = YAML.load_file(file)
 
-      YAML.load_file(config_file)[server]['de'] if File.file?(config_file)
+
+        return data[server]['de'] if data[server]
+      end
+
+      {}
     end
   end
 end

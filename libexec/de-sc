@@ -11,11 +11,12 @@ if ARGV.first == '--complete'
 else
   server = ARGV.first
 
-  rails_folder = SshHosts.remote_rails_folder(server)
+  rails_folder  = SshHosts.remote_rails_folder(server)
+  rails_env     = SshHosts.remote_rails_env(server)
 
   puts "Connecting..."
 
   SshHosts.remote_command(server, %{
-    echo Running console... && cd #{ rails_folder }/current; (if test -f script/console ; then ./script/console; else bundle exec rails c; fi)
+    echo Running console... && cd #{ rails_folder }/current; (if test -f script/console ; then ./script/console; else RAILS_ENV=#{rails_env} bundle exec rails c; fi)
   })
 end

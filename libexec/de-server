@@ -69,15 +69,18 @@ begin
     end
   end
 
+  launch_command = "sudo #{flags.join(' ')}  passenger start --max-pool-size=3 --port=80"
+
   if File.file?(certificate_path) and File.file?(certificate_key_path)
     puts "Starting server with HTTPS..."
 
-    system %{#{flags.join(' ')} sudo passenger start --max-pool-size=3 --port=80 --ssl --ssl-port=443 --ssl-certificate=#{certificate_path} --ssl-certificate-key=#{certificate_key_path}}
+    launch_command = %{#{ launch_command} --ssl --ssl-port=443 --ssl-certificate=#{certificate_path} --ssl-certificate-key=#{certificate_key_path}}
   else
     puts "Starting server..."
-
-    system %{#{flags.join(' ')} sudo passenger start --max-pool-size=3 --port=80 }
   end
+
+  puts launch_command
+  system launch_command
 rescue SystemExit, Interrupt # Perform some actions on exit
   puts "Exiting..."
 
@@ -100,6 +103,9 @@ ensure
 
       system %{launchctl unload #{ postgresql_server_path }}
     end
+
+    # puts "Stopping pfctl..."
+    # system %{sudo pfctl -d}
   end
 
 end
