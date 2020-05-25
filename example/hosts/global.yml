@@ -1,0 +1,14 @@
+"*":
+  controlmaster: auto
+  controlpath: /tmp/ssh-%r@%h:%p
+  IdentityFile: ~/.ssh/id_rsa
+  GSSAPIAuthentication: no
+  StrictHostKeyChecking: no
+  TCPKeepAlive: yes
+  AddKeysToAgent: yes
+  UseKeychain: yes
+
+github:
+  Hostname: github.com
+  UseKeychain: yes
+  IdentityFile: ~/.ssh/id_rsa

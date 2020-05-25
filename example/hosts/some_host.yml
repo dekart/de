@@ -1,0 +1,19 @@
+host1:
+  Hostname: 12.34.56.78
+  User: myusername
+  IdentityFile: ~/.ssh/myid
+  de:
+    rails_folder: 'path/to/rails'
+    rails_env: 'production'
+
+host1_root:
+  Hostname: 12.34.56.78
+  User: root
+  IdentityFile: ~/.ssh/myid
+
+host2:
+  Hostname: 12.34.56.78
+  User: myusername
+  de:
+    rails_folder: 'path/to/rails'
+    rails_env: 'staging'
